@@ -1,10 +1,41 @@
+# sbt / Scala build output
 target/
 project/target/
 project/project/
+*.class
+*.log
+
+# Metals / Bloop / BSP (editor-generated)
 .bsp/
+.bloop/
+.metals/
+.scala-build/
+project/.bloop/
+project/metals.sbt
+.history
+.ensime
+.ensime_cache/
+
+# IDEs
 .idea/
+*.iml
+
+# Chisel / FIRRTL / Verilog output
 test_run_dir/
+generated/
+build/
 *.fir
 *.anno.json
 *.sv
 *.v
+*.f
+
+# Simulation artifacts (waveforms, Verilator)
+*.vcd
+*.vpd
+*.fst
+*.fsdb
+obj_dir/
+
+# OS
+.DS_Store
