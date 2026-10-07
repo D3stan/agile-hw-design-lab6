@@ -1,6 +1,6 @@
 import chisel3._
 
-class GenericCounter(n : Int) extends Module {
+class GenericCounter(n : Int) extends Module with HasCounterOut {
 
     def minX(y: Int): Int =
         if (y <= 0) 0
@@ -9,11 +9,12 @@ class GenericCounter(n : Int) extends Module {
     val n_width = minX(n)
 
     val io = IO(new Bundle {
-        val count = Output(UInt(n_width.W))
+        val out = Output(UInt(n_width.W))
     })
 
     val reg = RegInit(0.U(n_width.W))
     reg := Mux(reg === n.U, 0.U, reg + 1.U)
 
-    io.count := reg
+    io.out := reg
+    override def out: UInt = io.out
 }

@@ -6,37 +6,44 @@ import org.scalacheck.{Arbitrary, Gen, Shrink}
 import org.scalatestplus.scalacheck._
 import chisel3.simulator.PeekPokeAPI
 
-class CounterTest extends AnyFlatSpec
+abstract class CounterBehaviour[T <: Module with HasCounterOut](
+    name: String, max: Int)(gen: => T)
+    extends AnyFlatSpec
     with ChiselScalatestTester
     with ScalaCheckPropertyChecks {
 
+    behavior of name
+
     "A counter" should "start at 0" in {
-        test(new FixedCounter(8)) { c =>
-            c.io.out.expect(0.U)
+        test(gen) { c =>
+            c.out.expect(0.U)
         }
     }
 
     it should "count up once" in {
-        test(new FixedCounter(8)) { c =>
+        test(gen) { c =>
             c.clock.step()
-            c.io.out.expect(1.U)
+            c.out.expect(1.U)
         }   
     }
 
-    it should "count up many times" in {
-        test(new FixedCounter(8)) { c =>
-            for (i <- 0 to 254) {
-                c.io.out.expect(i)
+    it should "count up unti its max" in {
+        test(gen) { c =>
+            for (i <- 0 until max) {
+                c.out.expect(i.U)
                 c.clock.step()
-                c.io.out.expect(i + 1)
             }
+            c.out.expect(max.U)
         }
     }
 
     it should "overflow" in {
-        test(new FixedCounter(8)) { c =>
-            c.clock.step(256)
-            c.io.out.expect(0.U)
+        test(gen) { c =>
+            c.clock.step(max + 1)
+            c.out.expect(0.U)
         }
     }
 }
+
+class FixedCounterTest   extends CounterBehaviour("FixedCounter(8)", 255)(new FixedCounter(8))
+class GenericCounterTest extends CounterBehaviour("GenericCounter(10)", 10)(new GenericCounter(10))
