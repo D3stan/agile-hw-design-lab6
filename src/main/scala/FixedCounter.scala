@@ -1,6 +1,6 @@
 import chisel3._
 
-class MyCounter(width: Int) extends Module {
+class FixedCounter(width: Int) extends Module {
     val io = IO(new Bundle {
         val out = Output(UInt(width.W))
     })
